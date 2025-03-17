@@ -74,7 +74,6 @@ exports.getPosts = async (req, res) => {
     // ค้นหาข้อมูลโพสต์ทั้งหมดจากฐานข้อมูล MongoDB
     const posts = await PostModel.find()
       // ใช้ populate เพื่อดึงข้อมูลจากคอลเลกชันที่เชื่อมโยง (ในที่นี้คือข้อมูลเจ้าของโพสต์)
-      .populate("owner", ["username"])  // ดึงแค่ฟิลด์ `username` ของเจ้าของโพสต์
       .populate("category", ["name"]) // ดึงแค่ชื่อ (name) ของ MainCategory
       .populate("owner", ["displayName"])  // ดึงแค่ฟิลด์ `username` ของเจ้าของโพสต์
 

@@ -10,19 +10,25 @@ const Modal = ({ name }) => {
   const { signUpWithGoogle } = useContext(AuthContext);
 
   const googleSignUp = () => {
-    signUpWithGoogle().then(async (result) => {
-      const user = result.user;
-      console.log(user);
-      await UserService.addUser(user.email, user.displayName);
-      Swal.fire({
-        icon: "success",
-        title: "ลงชื่อเข้าใช้สำเร็จ!",
-        showConfirmButton: false,
-        timer: 2000,
+    signUpWithGoogle()
+      .then((result) => {
+        Swal.fire({
+          icon: "success",
+          title: "ลงชื่อเข้าใช้สำเร็จ!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        document.getElementById("login").close();
+      })
+      .catch((error) => {
+        console.error(error);
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: error.message,
+        });
+        document.getElementById("login").close();
       });
-      document.getElementById("login").close();
-      //navigate(from, { replace: true });
-    });
   };
 
   return (

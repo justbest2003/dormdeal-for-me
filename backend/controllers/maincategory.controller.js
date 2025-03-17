@@ -22,8 +22,6 @@ exports.addCategory = async (req, res) => {
 exports.getCategory = async (req,res) =>{
   try{
     const categorys = await MainCategory.find().populate("subCategories");
-    console.log(categorys);
-    
     res.json(categorys);
   } catch (error) {
     res.status(500).send({

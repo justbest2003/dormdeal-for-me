@@ -3,15 +3,12 @@ import { Cookies } from "react-cookie";
 export const AuthContext = createContext();
 import app from "../configs/firebase.config";
 import {
-  createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
   signInWithPopup,
   GoogleAuthProvider,
-  GithubAuthProvider,
-  FacebookAuthProvider,
   updateProfile,
 } from "firebase/auth";
 import UserService from "../services/user.service";
@@ -27,9 +24,6 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const auth = getAuth(app);
-  const createUser = (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password);
-  };
 
   const login = (email, password) => {
     return signInWithEmailAndPassword(auth, email, password);
@@ -41,17 +35,15 @@ const AuthProvider = ({ children }) => {
 
   const signUpWithGoogle = () => {
     const provider = new GoogleAuthProvider();
-    return signInWithPopup(auth, provider);
-  };
-
-  const signUpWithGithub = () => {
-    const provider = new GithubAuthProvider();
-    return signInWithPopup(auth, provider);
-  };
-
-  const signUpWithFacebook = () => {
-    const provider = new FacebookAuthProvider();
-    return signInWithPopup(auth, provider);
+    //provider.setCustomParameters({ hd: "webmail.npru.ac.th" });
+    return signInWithPopup(auth, provider).then((result) => {
+      const email = result.user.email;
+      if (!email.endsWith("@webmail.npru.ac.th")) {
+        auth.signOut();
+        throw new Error("กรุณาใช้บัญชีอีเมลมหาวิทยาลัยในการเข้าสู่ระบบ!");
+      }
+      return result;
+    });
   };
 
   const updateUserProfile = ({ name, photoURL }) => {
@@ -64,12 +56,9 @@ const AuthProvider = ({ children }) => {
   const authInfo = {
     user,
     isLoading,
-    createUser,
     login,
     logout,
     signUpWithGoogle,
-    signUpWithGithub,
-    signUpWithFacebook,
     updateUserProfile,
     getUser,
   };
@@ -82,7 +71,7 @@ const AuthProvider = ({ children }) => {
         setUser(currentUser);
         setIsLoading(false);
         const { email, displayName } = currentUser;
-        const response = await UserService.signJwt(email,displayName);
+        const response = await UserService.signJwt(email, displayName);
         if (response.data) {
           console.log(response.data);
           cookies.set("user", response.data);
