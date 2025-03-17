@@ -11,21 +11,24 @@ const Modal = ({ name }) => {
 
   const googleSignUp = () => {
     signUpWithGoogle()
-      .then((result) => {
+      .then(async (result) => {
+        const user = result.user;
+        console.log(user);
+        await UserService.addUser(user.email, user.displayName);
         Swal.fire({
           icon: "success",
           title: "ลงชื่อเข้าใช้สำเร็จ!",
           showConfirmButton: false,
-          timer: 1500,
+          timer: 2000,
         });
         document.getElementById("login").close();
       })
       .catch((error) => {
-        console.error(error);
         Swal.fire({
           icon: "error",
-          title: "เกิดข้อผิดพลาด",
+          title: "เกิดข้อผิดพลาด!",
           text: error.message,
+          showConfirmButton: false,
         });
         document.getElementById("login").close();
       });

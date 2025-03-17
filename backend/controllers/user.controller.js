@@ -27,6 +27,8 @@ exports.sign = async (req, res) => {
     displayName: user.displayName,
   };
   res.status(200).json(userInfo);
+  console.log(userInfo);
+  
 };
 
 exports.addUser = async (req, res) => {

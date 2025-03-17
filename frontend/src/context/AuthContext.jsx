@@ -3,12 +3,15 @@ import { Cookies } from "react-cookie";
 export const AuthContext = createContext();
 import app from "../configs/firebase.config";
 import {
+  createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
   signInWithPopup,
   GoogleAuthProvider,
+  GithubAuthProvider,
+  FacebookAuthProvider,
   updateProfile,
 } from "firebase/auth";
 import UserService from "../services/user.service";
@@ -25,22 +28,19 @@ const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const auth = getAuth(app);
 
-  const login = (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
-  };
-
   const logout = () => {
     return signOut(auth);
   };
 
   const signUpWithGoogle = () => {
     const provider = new GoogleAuthProvider();
-    //provider.setCustomParameters({ hd: "webmail.npru.ac.th" });
+    provider.setCustomParameters({ hd: "webmail.npru.ac.th" });
+
     return signInWithPopup(auth, provider).then((result) => {
       const email = result.user.email;
       if (!email.endsWith("@webmail.npru.ac.th")) {
         auth.signOut();
-        throw new Error("กรุณาใช้บัญชีอีเมลมหาวิทยาลัยในการเข้าสู่ระบบ!");
+        throw new Error("กรุณาใช้บัญชีอีเมลมหาวิทยาลัยในการเข้าสู่ระบบ");
       }
       return result;
     });
@@ -56,7 +56,6 @@ const AuthProvider = ({ children }) => {
   const authInfo = {
     user,
     isLoading,
-    login,
     logout,
     signUpWithGoogle,
     updateUserProfile,

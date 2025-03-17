@@ -13,8 +13,6 @@ const UserMenu = () => {
   };
 
   const userInfo = getUser();
-  console.log("User Object:", user);
-  console.log("User Role:", user?.role);
   console.log("User Info:", userInfo);
   
   const handleLogout = () => {
