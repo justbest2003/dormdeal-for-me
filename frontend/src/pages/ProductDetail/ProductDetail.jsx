@@ -1,7 +1,6 @@
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import ProductService from "../../services/product.service";
 import ModalReport from "../../components/ReportPost/ModalReport";
 import Breadcrumbs from "../../components/Breadcrumb";
 import ProductCard from "../../components/ProductCard";
@@ -18,28 +17,28 @@ const ProductDetail = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const navigate = useNavigate();
   
-  useEffect(() => {
-    const fetchProduct = async () => {
-      console.log("Fetching product with ID:", id);
-      const selectedProduct = await ProductService.getProductById(id);
-      console.log("Selected Product:", selectedProduct);
+  // useEffect(() => {
+  //   const fetchProduct = async () => {
+  //     console.log("Fetching product with ID:", id);
+  //     const selectedProduct = await ProductService.getProductById(id);
+  //     console.log("Selected Product:", selectedProduct);
 
-      if (selectedProduct) {
-        setProduct(selectedProduct);
-        setSelectedImage(selectedProduct.images?.[0] || "/default.jpg"); // ตั้งค่ารูปแรกเป็นค่าเริ่มต้น
+  //     if (selectedProduct) {
+  //       setProduct(selectedProduct);
+  //       setSelectedImage(selectedProduct.images?.[0] || "/default.jpg"); // ตั้งค่ารูปแรกเป็นค่าเริ่มต้น
 
-        const AllProducts = await ProductService.getAllProducts();
-        const related = AllProducts.filter(
-          (product) => product.category === selectedProduct.category && product._id !== selectedProduct._id
-        );
+  //       const AllProducts = await ProductService.getAllProducts();
+  //       const related = AllProducts.filter(
+  //         (product) => product.category === selectedProduct.category && product._id !== selectedProduct._id
+  //       );
 
-        console.log("Related Products:", related);
-        setRelatedProducts(related);
-      }
-    };
+  //       console.log("Related Products:", related);
+  //       setRelatedProducts(related);
+  //     }
+  //   };
 
-    fetchProduct();
-  }, [id]);
+  //   fetchProduct();
+  // }, [id]);
 
   const breadcrumbMenu = [
     { name: "หน้าแรก", link: "/" },
@@ -142,7 +141,7 @@ const ProductDetail = () => {
       </div>
 
       {/* สินค้าที่คล้ายกัน */}
-      <div className="mt-22">
+      {/* <div className="mt-22">
         <h2 className="text-xl font-semibold mb-4">สินค้าที่คล้ายกัน</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {relatedProducts.slice(0, 5).map((product) => (
@@ -158,7 +157,7 @@ const ProductDetail = () => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

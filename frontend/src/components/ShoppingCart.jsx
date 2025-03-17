@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
 import ProductCard from "./ProductCard";
-import ProductService from "../services/product.service";
+import PostService from "../services/postproduct.service" 
 
 const ShoppingCart = () => {
   const [products, setProducts] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await ProductService.getAllProducts();
-      if (data) {
-        setProducts(data);
+    const fetchProducts = async () => {
+      try {
+        const response = await PostService.getAllPostsProduct(); // เรียก API
+        setProducts(response.data); // อัปเดต state
+      } catch (error) {
+        console.error("Error fetching products:", error);
       }
     };
-    fetchData();
+
+    fetchProducts();
   }, []);
 
   return (
@@ -67,9 +68,7 @@ const ShoppingCart = () => {
       {/* รายการสินค้า */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {products.map((product) => (
-          <div key={product.id} onClick={() => navigate(`/shoppost/${product._id}`)} className="cursor-pointer">
-            <ProductCard product={product} />
-          </div>
+          <ProductCard key={product._id} product={product} />
         ))}
       </div>
     </div>

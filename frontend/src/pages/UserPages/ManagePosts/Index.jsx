@@ -1,21 +1,21 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import ProductCard from "../../../components/ProductCard";
-import ProductService from "../../../services/product.service";
+// import ProductCard from "../../../components/ProductCard";
+// import ProductService from "../../../services/product.service";
 
 const ManagePost = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await ProductService.getAllProducts();
-      if (data) {
-        setProducts(data);
-      }
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const data = await ProductService.getAllProducts();
+  //     if (data) {
+  //       setProducts(data);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
   return (
     <div className="section-container pt-16">
