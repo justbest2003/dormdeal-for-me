@@ -5,20 +5,22 @@ const Categories = () => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await CategorieService.getAllCategorie();
-      if (data) {
-        setCategories(data);
+    const fetchCategory = async () => {
+      try {
+        const response = await CategorieService.getAllCategorie();
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
       }
     };
-    fetchData();
+    fetchCategory();
   }, []);
-
+  
   return (
     <div className="section-container mt-22">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {categories.map((category) => (
-          <div key={category.id} className="categories-card">
+          <div key={category._id} className="categories-card">
             {category.name}
             <img
               className="w-16 h-16 object-cover rounded-md"

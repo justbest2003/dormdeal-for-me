@@ -19,16 +19,14 @@ exports.addCategory = async (req, res) => {
     }
   };
 
-exports.getCategory = async (req,res) =>{
-  try{
-    const categorys = await MainCategory.find().populate("subCategories");
-    res.json(categorys);
-  } catch (error) {
-    res.status(500).send({
-      message: "An error occurred while fetching categorys",
-    });
-  }
-}
+  exports.getCategory = async (req, res) => {
+    try {
+      const categories = await MainCategory.find().populate("subCategories");
+      res.json(categories);
+    } catch (error) {
+      res.status(500).json({ message: "An error occurred while fetching categories" });
+    }
+  };
 
 exports.getCategoryById = async (req,res) =>{
   const {id} = req.params;

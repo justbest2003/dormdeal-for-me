@@ -7,6 +7,8 @@ import RejectedPosts from "../pages/UserPages/RejectedPosts/Index";
 import SoldOutPosts from "../pages/UserPages/SoldOutPosts/Index";
 import ManagePost from "../pages/UserPages/ManagePosts/Index";
 import PostProduct from "../pages/PostProduct/Index";
+import ShoppingPost from "../pages/ShoppiongPost/Index";
+
 
 
 const UserRoutes = {
@@ -16,6 +18,7 @@ const UserRoutes = {
     { path: "", element: <Home /> },
     { path: "managepost", element: <ManagePost /> },
     { path: "post", element: <PostProduct /> },
+    { path: "shoppingpost", element: <ShoppingPost /> },
 
     //routes ของ ManagePostStatus
     {
