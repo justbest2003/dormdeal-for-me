@@ -7,10 +7,7 @@ const MainCategorySchema = new Schema({
     required: true,
     unique: true, 
   },
-  image: {
-    type: String,
-    required: true,
-  },
+  image: { type: String, required: true },
   subCategories: [{ type: mongoose.Schema.Types.ObjectId, ref: "SubCategory" }],
 });
 
