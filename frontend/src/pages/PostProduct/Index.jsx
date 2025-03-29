@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import PostService from "../../services/postproduct.service";
 import CategorieService from "../../services/categorie.service";
-import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { RxCross2 } from "react-icons/rx";
 
 const Index = () => {
+  const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
   const [postProduct, setPostProduct] = useState({
     postType: "",
     productName: "",
@@ -21,44 +22,28 @@ const Index = () => {
     subcategory: "",
   });
 
-  const [mainCategoryList, setMainCategoryList] = useState([]);
-  const [subcategoryList, setSubcategoryList] = useState([]);
-
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await CategorieService.getAllCategorie();
-        if (response.status === 200) {
-          setMainCategoryList(response.data);
-        }
+        setCategories(response.data);
       } catch (error) {
-        Swal.fire({
-          title: "Error",
-          text: error?.response?.data?.message || error.message,
-          icon: "error",
-        });
+        console.error("Error fetching categories:", error);
       }
     };
+
     fetchCategories();
   }, []);
 
-  // Update subcategories when main category changes
   useEffect(() => {
+    // เมื่อหมวดหมู่หลักถูกเลือก ให้ดึงซับหมวดหมู่ที่เกี่ยวข้อง
     if (postProduct.category) {
-      const selectedCategory = mainCategoryList.find(
+      const selectedCategory = categories.find(
         (category) => category._id === postProduct.category
       );
-      if (selectedCategory && selectedCategory.subCategories) {
-        setSubcategoryList(selectedCategory.subCategories);
-        // Reset subcategory selection when main category changes
-        setPostProduct((prev) => ({ ...prev, subcategory: "" }));
-      } else {
-        setSubcategoryList([]);
-      }
-    } else {
-      setSubcategoryList([]);
+      setSubCategories(selectedCategory?.subCategories || []);
     }
-  }, [postProduct.category, mainCategoryList]);
+  }, [postProduct.category, categories]);
 
   const navigate = useNavigate();
 
@@ -211,17 +196,16 @@ const Index = () => {
           {/* เลือกหมวดหมู่ให้ตรงกับสินค้า */}
           <div className="mt-8">
             <h2 className="text-xl font-semibold text-black">
-              เลือกหมวดหมู่ให้ตรงกับสินค้า
+              เลือกหมวดหมู่หลัก
             </h2>
             <select
-              className="select select-xl text-base border-gray-400 rounded-xl shadow-sm mt-2 w-full p-4"
+            className="select select-xl xl:w-100 border-gray-400 rounded-xl shadow-sm mt-2"
               name="category"
               value={postProduct.category}
               onChange={handleChange}
-              required
             >
-              <option value="">เลือกหมวดหมู่</option>
-              {mainCategoryList.map((category) => (
+              <option value="default">เลือกหมวดหมู่</option>
+              {categories.map((category) => (
                 <option key={category._id} value={category._id}>
                   {category.name}
                 </option>
@@ -229,23 +213,22 @@ const Index = () => {
             </select>
           </div>
 
-          {/* เลือกหมวดหมู่ย่อย */}
-          {postProduct.category && subcategoryList.length > 0 && (
-            <div className="mt-4">
+          {/* เลือกซับหมวดหมู่ */}
+          {subCategories.length > 0 && (
+            <div className="mt-8">
               <h2 className="text-xl font-semibold text-black">
                 เลือกหมวดหมู่ย่อย
               </h2>
               <select
-                className="select select-xl text-base border-gray-400 rounded-xl shadow-sm mt-2 w-full p-4"
+              className="select select-xl xl:w-100 border-gray-400 rounded-xl shadow-sm mt-2 appearance-none"
                 name="subcategory"
                 value={postProduct.subcategory}
                 onChange={handleChange}
-                required
               >
-                <option value="">เลือกหมวดหมู่ย่อย</option>
-                {subcategoryList.map((subcategory) => (
-                  <option key={subcategory._id} value={subcategory._id}>
-                    {subcategory.name}
+                <option value="">เลือกซับหมวดหมู่</option>
+                {subCategories.map((subCategory) => (
+                  <option key={subCategory._id} value={subCategory._id}>
+                    {subCategory.subCategoryName}
                   </option>
                 ))}
               </select>
@@ -342,14 +325,14 @@ const Index = () => {
                 type="radio"
                 id="UsedGood"
                 name="condition"
-                value="UsedGood"
+                value="มือสองสภาพดี"
                 className="hidden"
                 onChange={handleChange}
               />
               <label
                 htmlFor="UsedGood"
                 className={`cursor-pointer text-center transition-all duration-300 flex items-center justify-center rounded-xl text-base p-4 w-full sm:w-48 h-14 border-2 mt-2 ${
-                  postProduct.condition === "UsedGood"
+                  postProduct.condition === "มือสองสภาพดี"
                     ? "bg-vivid text-white border-vivid shadow-md"
                     : "text-vivid border-vivid hover:bg-vivid hover:text-white"
                 }`}
@@ -362,14 +345,14 @@ const Index = () => {
                 type="radio"
                 id="UsedAcceptable"
                 name="condition"
-                value="UsedAcceptable"
+                value="มือสองสภาพพอใช้"
                 className="hidden"
                 onChange={handleChange}
               />
               <label
                 htmlFor="UsedAcceptable"
                 className={`cursor-pointer text-center transition-all duration-300 flex items-center justify-center rounded-xl text-base p-4 w-full sm:w-48 h-14 border-2 mt-2 ${
-                  postProduct.condition === "UsedAcceptable"
+                  postProduct.condition === "มือสองสภาพพอใช้"
                     ? "bg-vivid text-white border-vivid shadow-md"
                     : "text-vivid border-vivid hover:bg-vivid hover:text-white"
                 }`}
@@ -452,7 +435,6 @@ const Index = () => {
                   ยืนยันการโพสต์
                 </button>
               </div>
-
             </div>
           </div>
         </div>

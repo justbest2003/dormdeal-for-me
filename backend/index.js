@@ -8,6 +8,7 @@ const PORT = process.env.PORT;
 const DB_URL = process.env.DB_URL;
 const userRouter = require("./routers/user.router");
 const postRouter = require("./routers/post.router");
+const modRouter = require("./routers/mod.router")
 const maincategoryRouter = require("./routers/maincategory.router")
 const subcategoryRouter = require("./routers/subcategory.router")
 
@@ -28,6 +29,7 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/post", postRouter);
 app.use("/api/v1/maincategory", maincategoryRouter);
 app.use("/api/v1/subcategory", subcategoryRouter);
+app.use("/api/v1/mod", modRouter);
 
 app.listen(PORT, () => {
   console.log("Server is running on http://localhost:" + PORT);

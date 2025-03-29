@@ -7,12 +7,13 @@ const { upload, uploadToFirebase } = require("../middlewares/file.midleware");
 //http://localhost:5000/api/v1/maincategory
 router.post(
   "/",
-  authJwt.verifyToken,
+  // authJwt.verifyToken,
   upload,
   uploadToFirebase,
-  authJwt.isMod,
+  // authJwt.isMod,
   categoryController.addCategory
 );
+
 //http://localhost:5000/api/v1/maincategory
 router.get("/", categoryController.getCategory);
 //http://localhost:5000/api/v1/maincategory/id

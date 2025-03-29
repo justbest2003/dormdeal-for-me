@@ -8,7 +8,7 @@ const NavbarMod = () => {
   const { user } = useContext(AuthContext);
 
   return (
-    <div className="section-container navbar fixed top-0 left-1/2 transform -translate-x-1/2 w-full shadow-sm z-10 ">
+    <div className="section-container navbar bg-base-100 fixed top-0 w-full shadow-sm z-10 ">
       <div className="navbar-start">
         <div className="dropdown">
           {/* <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">

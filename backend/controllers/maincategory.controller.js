@@ -1,23 +1,26 @@
 const MainCategory = require ("../models/maincategory.model")
 // ใน category.controller.js
 exports.addCategory = async (req, res) => {
-    const { name } = req.body;
-    if (!name) {
-      return res.status(400).json({ message: "Category name is required" });
-    }
-    try {
-      const newCategory = new MainCategory({
-        name,
-      });
-      await newCategory.save();
-      res.status(201).json(newCategory);
-    } catch (error) {
-      res.status(500).json({
-        message: "Something went wrong while creating the category",
-        error: error.message,
-      });
-    }
-  };
+  const { name } = req.body;
+  if (!name) {
+    return res.status(400).json({ message: "Category name  is required" });
+  }
+  if (!req.file || !req.file.firebaseUrl)
+    return res.status(400).json({ message: "Image name  is required" });
+  try {
+    const newCategory = new MainCategory({
+      name,
+      image: req.file.firebaseUrl,
+    });
+    await newCategory.save();
+    res.status(201).json(newCategory);
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong while creating the category",
+      error: error.message,
+    });
+  }
+};
 
   exports.getCategory = async (req, res) => {
     try {

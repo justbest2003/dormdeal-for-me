@@ -22,6 +22,7 @@ body {
   color: var(--color-black);
   background-color: var(--color-white);
 }
+
 .section-container {
   @apply max-w-screen container 2xl:px-78 mx-auto xl:px-24 px-4 text-black;
 }
@@ -49,6 +50,10 @@ body {
 
   .btn-profile {
     @apply rounded-xl border bg-vivid py-2 px-4 text-center text-sm transition-all text-white cursor-pointer;
+  }
+
+  .btn-checkpost {
+    @apply rounded-xl border border-vivid py-2 px-4 text-center text-sm transition-all text-vivid hover:text-white hover:bg-vivid hover:border-vivid cursor-pointer;
   }
 
 

@@ -1,40 +1,24 @@
 import { motion } from "framer-motion";
 import ProductCard from "../../components/ProductCard";
-
-const products = [
-  {
-    id: 1,
-    productName: "Logitech G502 X Plus Wireless Gaming Mouse Black",
-    price: "1800",
-    images: "https://picsum.photos/200",
-  },
-  {
-    id: 2,
-    productName: "Ugreen เมาส์ไร้สาย 4000DPI แมวติง",
-    price: "1800",
-    images: "https://picsum.photos/200",
-  },
-  {
-    id: 3,
-    productName: "Razer แผ่นรองเมาส์ Wireless Gaming Mouse Black",
-    price: "1800",
-    images: "https://picsum.photos/200",
-  },
-  {
-    id: 4,
-    productName: "เมาส์ HyperX Pulsefirewwa FPS Pro",
-    price: "1800",
-    images: "https://picsum.photos/200",
-  },
-  {
-    id: 5,
-    productName: "เมาส์ Mx Ergo ใช้น้อยมากครับ เป็นเมาส์แบบ Trackball",
-    price: "1800",
-    images: "https://picsum.photos/200",
-  },
-];
+import { useEffect, useState } from "react";
+import PostService from "../../services/postproduct.service";
 
 const ProductSection = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await PostService.getAllPostsProduct(); 
+        setProducts(response.data); 
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   return (
     <div className="section-container px-6 py-12">
       {/* หัวข้อ */}
@@ -42,7 +26,7 @@ const ProductSection = () => {
 
       {/* Grid สินค้า */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-        {products.map((product, index) => (
+        {products.slice(0, 5).map((product, index) => (
           <motion.div
             key={product.id}
             initial={{ opacity: 0, scale: 0.9 }}

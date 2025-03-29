@@ -31,7 +31,7 @@ const PostSchema = new Schema({
   },
   condition: {
     type: String,
-    enum: ["UsedGood", "UsedAcceptable"],
+    enum: ["มือสองสภาพดี", "มือสองสภาพพอใช้"],
     required: true,
   },
   postPaymentType: {
@@ -44,6 +44,8 @@ const PostSchema = new Schema({
     enum: ["pending_review", "approved", "needs_revision", "rejected"],
     default: "pending_review",
   },
+},{
+  timestamps: true,
 });
 
 const PostModel = model("Post", PostSchema);

@@ -85,7 +85,7 @@ async function uploadsToFirebase(req, res, next) {
 
   const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 100000 }, //1MB
+    limits: { fileSize: 4000000 }, //4MB
     fileFilter: (req, file, cb) => {
       checkFileType(file, cb); //Check file exit
     },

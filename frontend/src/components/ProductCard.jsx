@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from "react";
-
 const ProductCard = ({ product }) => {
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("th-TH", {
+      style: "currency",
+      currency: "THB",
+    }).format(price);
+  };
 
   return (
     <div className="card shadow-lg flex flex-col h-full">
@@ -12,12 +16,14 @@ const ProductCard = ({ product }) => {
           className="w-full h-60 object-cover"
         />
 
-        {/* Badge "โฆษณา" */}
-        <div className="absolute top-2 left-2">
-          <span className="badge badge-warning gap-2 px-3 py-1 text-xs font-semibold">
-            🔥 โฆษณา
-          </span>
-        </div>
+        {/* Badge "โฆษณา" เฉพาะ Paid */}
+        {product.postPaymentType === "Paid" && (
+          <div className="absolute top-2 left-2">
+            <span className="badge badge-warning gap-2 px-3 py-1 text-xs font-semibold">
+              🔥 โฆษณา
+            </span>
+          </div>
+        )}
       </figure>
 
       {/* รายละเอียดสินค้า */}
@@ -28,8 +34,7 @@ const ProductCard = ({ product }) => {
         </h3>
 
         {/* ราคา */}
-        <p className="text-lg font-bold text-gray-900 mt-auto">
-          ฿ {product.price}
+        <p className="text-lg font-bold text-gray-900 mt-auto">{formatPrice(product.price)}
         </p>
       </div>
     </div>

@@ -1,6 +1,5 @@
 const PostModel = require("../models/post.model");
 const MainCategory = require("../models/maincategory.model")
-const SubCategory = require("../models/subcategory.model");
 
 //createPost
 exports.createPost = async (req, res) => {
@@ -68,23 +67,26 @@ exports.createPost = async (req, res) => {
   }
 };
 
-//getAllPost
-exports.getPosts = async (req, res) => {
+// getAllPost
+exports.getAllPosts = async (req, res) => {
   try {
     // ค้นหาข้อมูลโพสต์ทั้งหมดจากฐานข้อมูล MongoDB
     const posts = await PostModel.find()
       // ใช้ populate เพื่อดึงข้อมูลจากคอลเลกชันที่เชื่อมโยง (ในที่นี้คือข้อมูลเจ้าของโพสต์)
       .populate("category", ["name"]) // ดึงแค่ชื่อ (name) ของ MainCategory
-      .populate("owner", ["displayName"])  // ดึงแค่ฟิลด์ `username` ของเจ้าของโพสต์
+      .populate("owner", ["displayName"]) // ดึงแค่ฟิลด์ `displayName` ของเจ้าของโพสต์
 
-      // เรียงลำดับโพสต์จากใหม่ไปเก่าตามวันที่สร้าง
-      .sort({ createdAt: -1 })
-    
+      // เรียงลำดับโดยให้ Paid มาก่อน และเรียง createdAt ใหม่สุด
+      .sort({ 
+        postPaymentType: -1, // ให้ "Paid" อยู่บนสุด
+        createdAt: -1 // แล้วเรียงตามวันที่ใหม่สุด
+      });
+
     // ส่งข้อมูลโพสต์ที่ได้กลับไปยัง client ในรูปแบบ JSON
     res.json(posts);
   } catch (error) {
     // ถ้ามีข้อผิดพลาดเกิดขึ้นในส่วน `try` จะมาที่นี่
-    console.error(error.message);  
+    console.error(error.message);
 
     // ส่งข้อผิดพลาดกลับไปที่ client โดยให้รหัสสถานะ 500 (Internal Server Error)
     res.status(500).send({
@@ -128,7 +130,7 @@ exports.getPostById = async (req, res) => {
 
 //deletePost ByOwner
 
-exports.deletePost = async (req, res) => {
+exports.deletePostByOwner = async (req, res) => {
   const { id } = req.params;
   const ownerId = req.userId;
 
@@ -232,3 +234,48 @@ exports.updatePost = async (req, res) => {
     });
   }
 };
+
+// getAllPostByMod
+exports.getAllPostsByMod = async (req, res) => {
+  try {
+    const posts = await PostModel.find()
+      .populate("category", ["name"]) 
+      .populate("owner", ["displayName"])
+      .sort({ 
+        postPaymentType: -1,
+        createdAt: 1
+      });
+
+    res.json(posts);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send({
+      message: "An error occurred while fetching posts",
+    });
+  }
+};
+
+exports.deletePostByMod = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const postDoc = await PostModel.findById(id);
+
+    if (!postDoc) {
+      return res.status(404).send({
+        message: "Post not found",
+      });
+    }
+
+    await PostModel.findByIdAndDelete(id);
+
+    res.status(200).send({
+      message: "Post deleted successfully",
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send({
+      message: error.message || "An error occurred while deleting the post",
+    });
+  }
+}

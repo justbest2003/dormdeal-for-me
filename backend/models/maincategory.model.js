@@ -8,7 +8,9 @@ const MainCategorySchema = new Schema({
     unique: true, 
   },
   image: { type: String, required: true },
-  subCategories: [{ type: mongoose.Schema.Types.ObjectId, ref: "SubCategory" }],
+  subCategories: [
+    { subCategoryName: { type: String, required: false, unique: true } },
+  ],
 });
 
 const MainCategoryModel = model("MainCategory", MainCategorySchema);

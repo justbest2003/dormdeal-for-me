@@ -1,36 +1,40 @@
-const SubCategory = require("../models/subcategory.model")
 const MainCategory = require("../models/maincategory.model")
 
 exports.addSubCategory = async (req, res) => {
-    const { mainCategoryId, subCategoryName } = req.body;
-  
-    if (!mainCategoryId || !subCategoryName) {
-      return res.status(400).json({ message: "Main category ID and subcategory name are required" });
+  const { mainCategoryId, subCategoryName } = req.body;
+
+  if (!mainCategoryId || !subCategoryName) {
+    return res
+      .status(400)
+      .json({ message: "Main category ID and subcategory name are required" });
+  }
+
+  try {
+    // ค้นหา MainCategory
+    const mainCategory = await MainCategory.findById(mainCategoryId);
+    if (!mainCategory) {
+      return res.status(404).json({ message: "Main category not found" });
     }
 
-    try {
-      // ค้นหา MainCategory
-      const mainCategory = await MainCategory.findById(mainCategoryId);
-      if (!mainCategory) {
-        return res.status(404).json({ message: "Main category not found" });
-      }
-  
-      // สร้าง SubCategory ใหม่
-      const newSubCategory = new SubCategory({
-        name: subCategoryName,
-        mainCategory: mainCategoryId
-      });
-      await newSubCategory.save();
-  
-      // เพิ่ม ObjectId ของ SubCategory ไปที่ MainCategory
-      mainCategory.subCategories.push(newSubCategory._id);
-      await mainCategory.save();
-  
-      res.status(201).json(newSubCategory);
-    } catch (error) {
-      res.status(500).json({ message: "Error adding subcategory", error: error.message });
+    // mainCategory.subCategories.push(subCategoryName)
+    const subexits = mainCategory.subCategories.includes(subCategoryName);
+    if (subexits) {
+      return res.status(409).json({ message: "subcategory already" });
     }
-  };
+    console.log(subCategoryName);
+
+    // เพิ่ม ObjectId ของ SubCategory ไปที่ MainCategory
+    mainCategory.subCategories.push({ subCategoryName: subCategoryName });
+    console.log(mainCategory);
+
+    await mainCategory.save();
+    res.status(201).json(mainCategory);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error adding subcategory", error: error.message });
+  }
+};
 
 exports.getSubCategories = async(req,res) =>{
   try{
