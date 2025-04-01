@@ -96,40 +96,28 @@ exports.getAllPosts = async (req, res) => {
 };
 
 //getPostById
-// ฟังก์ชัน `getPostById` ใช้ในการดึงโพสต์ตาม `id` ที่ได้รับจาก URL
 exports.getPostById = async (req, res) => {
-  // ดึง `id` จาก `req.params` ซึ่งจะได้รับมาจาก URL params (เช่น /posts/:id)
   const { id } = req.params;
-
   try {
-    // ค้นหาข้อมูลโพสต์จากฐานข้อมูลโดยใช้ `id` ที่ได้มา
-    const postDoc = await PostModel.findById(id)
-      // ใช้ populate เพื่อดึงข้อมูลจากคอลเลกชันที่เชื่อมโยง (ในที่นี้คือข้อมูลของเจ้าของโพสต์)
-      .populate("owner");  // ดึงข้อมูลของเจ้าของโพสต์  จากคอลเลกชัน User
-
-    // ถ้าไม่พบโพสต์ที่มี `id` นี้ในฐานข้อมูล
+    const postDoc = await PostModel.findById(id).populate("owner", [
+      "displayName",
+    ]);
     if (!postDoc) {
       res.status(404).send({
         message: "Post not found",
       });
       return;
     }
-
-    // ถ้าพบโพสต์, ส่งข้อมูลโพสต์กลับไปยัง client
     res.json(postDoc);
   } catch (error) {
-    // ถ้ามีข้อผิดพลาดในการค้นหาหรือเชื่อมต่อกับฐานข้อมูล, แสดงข้อผิดพลาด
-    console.log(error.message);  // แสดงข้อผิดพลาดใน console
-
-    // ส่งข้อผิดพลาด 500 (Internal Server Error) กลับไปยัง client พร้อมข้อความที่อธิบาย
+    console.log(error.message);
     res.status(500).send({
-      message: "Something error occurred while getting post details",  // ข้อความข้อผิดพลาด
+      message: "Something error occurred while getting post Details",
     });
   }
 };
 
 //deletePost ByOwner
-
 exports.deletePostByOwner = async (req, res) => {
   const { id } = req.params;
   const ownerId = req.userId;

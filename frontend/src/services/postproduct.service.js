@@ -15,9 +15,14 @@ const getAllPostsProduct = async () => {
   return await api.get(API_URL);
 };
 
+const getPostById = async (id) => {
+  return await api.get(`${API_URL}/${id}`);
+}
+
 const PostService = {
   createPostProduct,
-  getAllPostsProduct
+  getAllPostsProduct,
+  getPostById
 };
 
 export default PostService;

@@ -1,77 +1,66 @@
-import { useParams } from "react-router";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import ModalReport from "../../components/ReportPost/ModalReport";
-import Breadcrumbs from "../../components/Breadcrumb";
-import ProductCard from "../../components/ProductCard";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router";
+import PostService from "../../services/postproduct.service";
+import Swal from "sweetalert2";
+import { format } from "date-fns";
 
 //import React Icons
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { AiOutlineMessage } from "react-icons/ai";
 
 const ProductDetail = () => {
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("th-TH", {
+      style: "currency",
+      currency: "THB",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0, 
+    }).format(price);
+  };
+  
+
+  const [postProductDetail, setPostProductDetail] = useState([]);
+
   const { id } = useParams();
-  const [product, setProduct] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(""); // เก็บรูปที่เลือก
-  const [liked, setLiked] = useState(false);
-  const [relatedProducts, setRelatedProducts] = useState([]);
-  const navigate = useNavigate();
-  
-  // useEffect(() => {
-  //   const fetchProduct = async () => {
-  //     console.log("Fetching product with ID:", id);
-  //     const selectedProduct = await ProductService.getProductById(id);
-  //     console.log("Selected Product:", selectedProduct);
 
-  //     if (selectedProduct) {
-  //       setProduct(selectedProduct);
-  //       setSelectedImage(selectedProduct.images?.[0] || "/default.jpg"); // ตั้งค่ารูปแรกเป็นค่าเริ่มต้น
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const response = await PostService.getPostById(id);
+        if (response.status === 200) {
+          setPostProductDetail(response.data);
+        }
+      } catch (error) {
+        Swal.fire({
+          title: "Post Detail",
+          text: error?.response?.data?.message || error.message,
+          icon: "error",
+        });
+      }
+    };
+    fetchPost();
+  }, [id]);
 
-  //       const AllProducts = await ProductService.getAllProducts();
-  //       const related = AllProducts.filter(
-  //         (product) => product.category === selectedProduct.category && product._id !== selectedProduct._id
-  //       );
-
-  //       console.log("Related Products:", related);
-  //       setRelatedProducts(related);
-  //     }
-  //   };
-
-  //   fetchProduct();
-  // }, [id]);
-
-  const breadcrumbMenu = [
-    { name: "หน้าแรก", link: "/" },
-    { name: "อุปกรณ์อิเล็กทรอนิกส์", link: "/shoppost" },
-    { name: "คอมพิวเตอร์", link: "#" },
-  ];
-
-  if (!product) {
-    return <div className="text-center mt-10">กำลังโหลดข้อมูล...</div>;
-  }
-
-  // ตรวจสอบให้แน่ใจว่า product.images มีค่าก่อนจะใช้ filter
-  const filteredImages = product.images?.filter((img) => img !== selectedImage) || [];
-
-  
   return (
     <div className="section-container sm:mt-7 mt-6 px-6 py-12">
-      {/* Breadcrumb */}
-      <Breadcrumbs breadcrumbMenu={breadcrumbMenu} />
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* ภาพสินค้า */}
         <div className="flex flex-col">
-        <img src={selectedImage} alt={product.productName} className="w-130 h-130 rounded-lg shadow-md" />
-          
-        <div className="flex mt-2 space-x-2">
-            {filteredImages.map((img, index) => (
+          {/* แสดงรูปแรกเป็น Main Image */}
+          <img
+            src={postProductDetail?.images?.[0]} // ใช้ optional chaining เพื่อป้องกัน undefined หรือ null
+            alt="Main Product"
+            className="w-130 h-130 rounded-lg shadow-md object-cover"
+          />
+
+          {/* Thumbnail ไม่รวมรูปแรก */}
+          <div className="flex mt-2 space-x-2">
+            {postProductDetail?.images?.slice(1).map((img, index) => (
               <img
                 key={index}
                 src={img}
-                alt={`Gallery ${index}`}
-                className="w-20 h-20 rounded-md border shadow-sm cursor-pointer"
-                onClick={() => setSelectedImage(img)}
+                alt={`Gallery ${index + 1}`}
+                className="w-20 h-20 rounded-md shadow-sm cursor-pointer"
               />
             ))}
           </div>
@@ -79,32 +68,36 @@ const ProductDetail = () => {
 
         {/* รายละเอียดสินค้า */}
         <div>
-          <h1 className="text-2xl font-bold">{product.productName}</h1>
+          <h1 className="text-2xl font-bold">
+            {postProductDetail.productName}
+          </h1>
 
           <div className="flex items-center justify-between my-2">
             <p className="text-3xl font-bold text-black">
-              ฿ {product.price.toLocaleString()}
+              {formatPrice(postProductDetail.price)}
             </p>
-            <button
+            {/* <button
               onClick={() => setLiked(!liked)}
               className="text-gray-500 hover:text-red-500"
             >
               {liked ? <FaHeart size={24} /> : <FaRegHeart size={24} />}
-            </button>
+            </button> */}
           </div>
 
           <div className="flex items-center justify-between mt-4 border-b pb-1">
             <p className="text-xl font-semibold mt-3">
               สภาพสินค้า -{" "}
-              <span className="text-lg text-gray-700">{product.condition}</span>
+              <span className="text-lg text-gray-700">
+                {postProductDetail.condition}
+              </span>
             </p>
           </div>
           <div className="flex items-center justify-between pb-2 mt-4 ">
             <h2 className="text-xl font-semibold ">รายละเอียด</h2>
-            <ModalReport name="report_modal" />
+            {/* <ModalReport name="report_modal" /> */}
           </div>
-          <p className="text-gray-800 text-sm leading-relaxed mt-4 ">
-            {product.description}
+          <p className="text-gray-800 text-sm leading-relaxed mt-1">
+            {postProductDetail.description}
           </p>
         </div>
 
@@ -115,17 +108,17 @@ const ProductDetail = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <img
-                src={product.seller?.image || "https://picsum.photos/200/200"}
-                alt={product.seller?.name}
+                // src={postProductDetail.owner?.image || "https://picsum.photos/200/200"}
+                alt={postProductDetail.owner?.displayName}
                 className="w-14 h-14 rounded-full border"
               />
               <p className="font-medium truncate w-32 sm:w-auto">
-                {product.seller?.owner || "ผู้ใช้ไม่ระบุ"}
+                {postProductDetail.owner?.displayName || "ผู้ใช้ไม่ระบุ"}
               </p>
             </div>
 
             <a
-              href={`/profile/${product.seller?.id}`}
+              // href={`/profile/${product.seller?.id}`}
               className="text-blue-600 font-medium hover:underline"
             >
               ดูโปรไฟล์

@@ -3,11 +3,14 @@ const ProductCard = ({ product }) => {
     return new Intl.NumberFormat("th-TH", {
       style: "currency",
       currency: "THB",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0, 
     }).format(price);
   };
 
   return (
     <div className="card shadow-lg flex flex-col h-full">
+      <a href={`/postproductdetail/${product._id}`}>
       {/* รูปสินค้า */}
       <figure className="relative">
         <img
@@ -37,6 +40,7 @@ const ProductCard = ({ product }) => {
         <p className="text-lg font-bold text-gray-900 mt-auto">{formatPrice(product.price)}
         </p>
       </div>
+      </a>
     </div>
   );
 };

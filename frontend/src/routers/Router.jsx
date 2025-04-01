@@ -24,7 +24,7 @@ const router = createBrowserRouter([
         element: <ShoppingPost />,
       },
       {
-        path: "/shoppost/:id",
+        path: "/postproductdetail/:id",
         element: <ProductDetail />,
       },
       {
@@ -35,9 +35,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/mod",
-    element: (
-        <ModLayout />
-    ),
+    element: <ModLayout />,
     children: [
       {
         path: "",
@@ -45,7 +43,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-  
 ]);
 
 export default router;
