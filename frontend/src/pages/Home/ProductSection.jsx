@@ -22,7 +22,7 @@ const ProductSection = () => {
   return (
     <div className="section-container px-6 py-12">
       {/* หัวข้อ */}
-      <h2 className="text-2xl font-bold mb-6">สินค้าที่แนะนำ</h2>
+      <h2 className="text-2xl font-bold mb-6">สินค้าที่โฆษณา</h2>
 
       {/* Grid สินค้า */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">

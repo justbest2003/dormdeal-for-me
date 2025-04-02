@@ -16,7 +16,7 @@ exports.sign = async (req, res) => {
     return res.status(404).json({ message: "Email is not found" });
   }
 
-  const token = jwt.sign({ id: user._id, email: user.email, role: user.role, displayName: user.displayName }, secret, {
+  const token = jwt.sign({ id: user._id, email: user.email, role: user.role, displayName: user.displayName, photoURL: user.photoURL }, secret, {
     expiresIn: "1h",
   });
 
@@ -25,6 +25,7 @@ exports.sign = async (req, res) => {
     email: user.email,
     role: user.role,
     displayName: user.displayName,
+    photoURL: user.photoURL,
   };
   res.status(200).json(userInfo);
   console.log(userInfo);
@@ -33,7 +34,7 @@ exports.sign = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
-    const { email, displayName } = req.body;
+    const { email, displayName, photoURL } = req.body;
     if (!email) {
       return res.status(400).json({ message: "Email and displayName are required" });
     }
@@ -45,7 +46,7 @@ exports.addUser = async (req, res) => {
     }
 
     // สร้างผู้ใช้ใหม่
-    const newUser = new UserModel({ displayName, email });
+    const newUser = new UserModel({ displayName, email, photoURL });
     await newUser.save();
 
     //res.status(201).json({ message: "User added successfully" });

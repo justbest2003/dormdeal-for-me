@@ -1,5 +1,5 @@
 const PostModel = require("../models/post.model");
-const MainCategory = require("../models/maincategory.model")
+const MainCategory = require("../models/maincategory.model");
 
 //createPost
 exports.createPost = async (req, res) => {
@@ -16,7 +16,7 @@ exports.createPost = async (req, res) => {
     price,
     description,
     condition,
-    postPaymentType
+    postPaymentType,
   } = req.body;
   if (
     !postType ||
@@ -33,7 +33,7 @@ exports.createPost = async (req, res) => {
   try {
     const categoryDoc = await MainCategory.findById(category);
     const subCategoryDoc = await MainCategory.findById(category);
-    
+
     if (!categoryDoc) {
       return res.status(404).json({ message: "Category not found" });
     }
@@ -73,13 +73,13 @@ exports.getAllPosts = async (req, res) => {
     // ค้นหาข้อมูลโพสต์ทั้งหมดจากฐานข้อมูล MongoDB
     const posts = await PostModel.find()
       // ใช้ populate เพื่อดึงข้อมูลจากคอลเลกชันที่เชื่อมโยง (ในที่นี้คือข้อมูลเจ้าของโพสต์)
-      .populate("category", ["name"]) // ดึงแค่ชื่อ (name) ของ MainCategory
-      .populate("owner", ["displayName"]) // ดึงแค่ฟิลด์ `displayName` ของเจ้าของโพสต์
+      .populate("category", ["name"])
+      .populate("owner", ["displayName"])
 
       // เรียงลำดับโดยให้ Paid มาก่อน และเรียง createdAt ใหม่สุด
-      .sort({ 
+      .sort({
         postPaymentType: -1, // ให้ "Paid" อยู่บนสุด
-        createdAt: -1 // แล้วเรียงตามวันที่ใหม่สุด
+        createdAt: -1, // แล้วเรียงตามวันที่ใหม่สุด
       });
 
     // ส่งข้อมูลโพสต์ที่ได้กลับไปยัง client ในรูปแบบ JSON
@@ -100,7 +100,7 @@ exports.getPostById = async (req, res) => {
   const { id } = req.params;
   try {
     const postDoc = await PostModel.findById(id).populate("owner", [
-      "displayName",
+      "displayName","photoURL",
     ]);
     if (!postDoc) {
       res.status(404).send({
@@ -142,7 +142,7 @@ exports.deletePostByOwner = async (req, res) => {
     res.status(200).send({
       message: "Post deleted successfully",
     });
-  } catch (error) { 
+  } catch (error) {
     console.error(error.message);
     res.status(500).send({
       message: error.message || "An error occurred while deleting the post",
@@ -150,15 +150,14 @@ exports.deletePostByOwner = async (req, res) => {
   }
 };
 
-
 //getPostByOwner
-exports.getPostByOwner = async(req,res)=>{
+exports.getPostByOwner = async (req, res) => {
   const { id } = req.params;
   try {
     // ค้นหาโพสต์ทั้งหมดที่เจ้าของเป็น `id` ที่ได้รับจาก URL
     const postDoc = await PostModel.find({ owner: id })
-    // ใช้ populate เพื่อดึงข้อมูลเจ้าของโพสต์ (เช่น ชื่อผู้ใช้)
-    .populate("owner");
+      // ใช้ populate เพื่อดึงข้อมูลเจ้าของโพสต์ (เช่น ชื่อผู้ใช้)
+      .populate("owner");
 
     // ถ้าไม่พบโพสต์ที่มีเจ้าของ `id` นี้
     if (!postDoc) {
@@ -176,7 +175,7 @@ exports.getPostByOwner = async(req,res)=>{
       message: "Something error occurred while getting post by author",
     });
   }
-}
+};
 
 //updatePostById
 exports.updatePost = async (req, res) => {
@@ -187,7 +186,7 @@ exports.updatePost = async (req, res) => {
 
   try {
     const postDoc = await PostModel.findById(id);
-    
+
     if (!postDoc) {
       return res.status(404).json({ message: "Post not found" });
     }
@@ -200,7 +199,7 @@ exports.updatePost = async (req, res) => {
 
     const { productName, category, price, description, condition } = req.body;
 
-    if (!productName || !category || !price || !description || !condition) {  
+    if (!productName || !category || !price || !description || !condition) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -218,7 +217,8 @@ exports.updatePost = async (req, res) => {
     res.json(postDoc);
   } catch (error) {
     res.status(500).send({
-      message: error.message || "Something error occurred while updating a post",
+      message:
+        error.message || "Something error occurred while updating a post",
     });
   }
 };
@@ -227,11 +227,11 @@ exports.updatePost = async (req, res) => {
 exports.getAllPostsByMod = async (req, res) => {
   try {
     const posts = await PostModel.find()
-      .populate("category", ["name"]) 
+      .populate("category", ["name"])
       .populate("owner", ["displayName"])
-      .sort({ 
+      .sort({
         postPaymentType: -1,
-        createdAt: 1
+        createdAt: 1,
       });
 
     res.json(posts);
@@ -266,4 +266,4 @@ exports.deletePostByMod = async (req, res) => {
       message: error.message || "An error occurred while deleting the post",
     });
   }
-}
+};

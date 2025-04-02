@@ -14,7 +14,7 @@ const Modal = ({ name }) => {
       .then(async (result) => {
         const user = result.user;
         console.log(user);
-        await UserService.addUser(user.email, user.displayName);
+        await UserService.addUser(user.email, user.displayName, user.photoURL);
         Swal.fire({
           icon: "success",
           title: "ลงชื่อเข้าใช้สำเร็จ!",

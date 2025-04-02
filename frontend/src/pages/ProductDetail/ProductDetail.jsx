@@ -1,27 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useParams } from "react-router";
 import PostService from "../../services/postproduct.service";
 import Swal from "sweetalert2";
-import { format } from "date-fns";
-
-//import React Icons
-import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { AiOutlineMessage } from "react-icons/ai";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
+
+import { FaRegHeart, FaHeart, FaBold } from "react-icons/fa6";
+import { PiWarningCircle } from "react-icons/pi";
 
 const ProductDetail = () => {
+  const [postProductDetail, setPostProductDetail] = useState({});
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const { id } = useParams();
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat("th-TH", {
       style: "currency",
       currency: "THB",
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0, 
+      maximumFractionDigits: 0,
     }).format(price);
   };
-  
-
-  const [postProductDetail, setPostProductDetail] = useState([]);
-
-  const { id } = useParams();
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -42,18 +43,21 @@ const ProductDetail = () => {
   }, [id]);
 
   return (
-    <div className="section-container sm:mt-7 mt-6 px-6 py-12">
+    <div className="section-container sm:mt-7 mt-6 px-6 py-14">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* ภาพสินค้า */}
         <div className="flex flex-col">
-          {/* แสดงรูปแรกเป็น Main Image */}
+          {/* Main Image */}
           <img
-            src={postProductDetail?.images?.[0]} // ใช้ optional chaining เพื่อป้องกัน undefined หรือ null
+            src={postProductDetail?.images?.[0]}
             alt="Main Product"
-            className="w-130 h-130 rounded-lg shadow-md object-cover"
+            className="w-130 h-130 rounded-lg shadow-md object-cover cursor-pointer"
+            onClick={() => {
+              setCurrentIndex(0);
+              setLightboxOpen(true);
+            }}
           />
 
-          {/* Thumbnail ไม่รวมรูปแรก */}
+          {/* Thumbnail */}
           <div className="flex mt-2 space-x-2">
             {postProductDetail?.images?.slice(1).map((img, index) => (
               <img
@@ -61,6 +65,10 @@ const ProductDetail = () => {
                 src={img}
                 alt={`Gallery ${index + 1}`}
                 className="w-20 h-20 rounded-md shadow-sm cursor-pointer"
+                onClick={() => {
+                  setCurrentIndex(index + 1);
+                  setLightboxOpen(true);
+                }}
               />
             ))}
           </div>
@@ -73,30 +81,34 @@ const ProductDetail = () => {
           </h1>
 
           <div className="flex items-center justify-between my-2">
-            <p className="text-3xl font-bold text-black">
+            <p className="text-3xl font-bold">
               {formatPrice(postProductDetail.price)}
             </p>
-            {/* <button
-              onClick={() => setLiked(!liked)}
-              className="text-gray-500 hover:text-red-500"
-            >
-              {liked ? <FaHeart size={24} /> : <FaRegHeart size={24} />}
-            </button> */}
+            <button className="text-gray-500 hover:text-red-500">
+              <FaRegHeart size={24} />
+            </button>
           </div>
 
-          <div className="flex items-center justify-between mt-4 border-b pb-1">
+          <div className="flex items-center justify-between mt-4 pb-1">
             <p className="text-xl font-semibold mt-3">
               สภาพสินค้า -{" "}
-              <span className="text-lg text-gray-700">
+              <span className="text-xl text-gray-700">
                 {postProductDetail.condition}
               </span>
             </p>
           </div>
+
+          <div className="border-b-1 mt-2"></div>
+
           <div className="flex items-center justify-between pb-2 mt-4 ">
             <h2 className="text-xl font-semibold ">รายละเอียด</h2>
+            <button className="flex items-center justify-center btn-report">
+              <PiWarningCircle className="mr-2" size={24} />
+              รายงานโพสต์
+            </button>
             {/* <ModalReport name="report_modal" /> */}
           </div>
-          <p className="text-gray-800 text-sm leading-relaxed mt-1">
+          <p className="text-gray-700 text-sm leading-relaxed mt-1">
             {postProductDetail.description}
           </p>
         </div>
@@ -104,53 +116,31 @@ const ProductDetail = () => {
         {/* รายละเอียดผู้ขาย */}
         <div className="shadow-lg p-6 w-full sm:w-[400px] rounded-2xl mt-6">
           <h2 className="text-xl mb-4">รายละเอียดผู้ขาย</h2>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <img
-                // src={postProductDetail.owner?.image || "https://picsum.photos/200/200"}
-                alt={postProductDetail.owner?.displayName}
-                className="w-14 h-14 rounded-full border"
-              />
-              <p className="font-medium truncate w-32 sm:w-auto">
-                {postProductDetail.owner?.displayName || "ผู้ใช้ไม่ระบุ"}
-              </p>
-            </div>
-
-            <a
-              // href={`/profile/${product.seller?.id}`}
-              className="text-blue-600 font-medium hover:underline"
-            >
-              ดูโปรไฟล์
-            </a>
+          <div className="flex items-center space-x-3">
+            <img
+              src={postProductDetail.owner?.photoURL}
+              alt="User PhotoURL"
+              className="w-14 h-14 rounded-full"
+            />
+            <p className="font-medium truncate w-32 sm:w-auto">
+              {postProductDetail.owner?.displayName || "ไม่พบผู้ใช้"}
+            </p>
           </div>
-
           {/* ปุ่มแชท */}
-          <button className="mt-4 flex items-center justify-center bg-gray-200 text-black px-4 py-2 rounded-2xl w-full border border-gray-300 hover:bg-gray-300">
-            <AiOutlineMessage size={20} className="mr-2" />
-            แชท
+          <button className="mt-4 flex items-center justify-center bg-gray-200 text-black px-4 py-2 rounded-2xl w-full border border-gray-300 hover:bg-gray-300 cursor-pointer">
+            <AiOutlineMessage size={20} className="mr-2" /> แชท
           </button>
         </div>
       </div>
 
-      {/* สินค้าที่คล้ายกัน */}
-      {/* <div className="mt-22">
-        <h2 className="text-xl font-semibold mb-4">สินค้าที่คล้ายกัน</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {relatedProducts.slice(0, 5).map((product) => (
-            <div
-              key={product._id}
-              onClick={() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                navigate(`/shoppost/${product._id}`);
-              }}
-              className="cursor-pointer"
-            >
-              <ProductCard product={product} />
-            </div>
-          ))}
-        </div>
-      </div> */}
+      {/* Lightbox */}
+      <Lightbox
+        open={lightboxOpen}
+        close={() => setLightboxOpen(false)}
+        slides={postProductDetail.images?.map((src) => ({ src })) || []}
+        styles={{ container: { backgroundColor: "rgba(0, 0, 0, 0.2)" } }}
+        index={currentIndex}
+      />
     </div>
   );
 };

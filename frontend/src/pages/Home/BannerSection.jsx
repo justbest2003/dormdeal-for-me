@@ -11,7 +11,7 @@ import banner2 from "/Banner/banner2.png";
 
 const BannerSection = () => {
   return (
-    <div className="section-container pt-28">
+    <div className="section-container pt-20">
       <Swiper
         spaceBetween={30}
         centeredSlides={true}

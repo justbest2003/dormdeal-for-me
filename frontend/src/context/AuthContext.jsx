@@ -69,8 +69,8 @@ const AuthProvider = ({ children }) => {
       if (currentUser) {
         setUser(currentUser);
         setIsLoading(false);
-        const { email, displayName } = currentUser;
-        const response = await UserService.signJwt(email, displayName);
+        const { email, displayName, photoURL } = currentUser;
+        const response = await UserService.signJwt(email, displayName, photoURL);
         if (response.data) {
           console.log(response.data);
           cookies.set("user", response.data);
