@@ -116,6 +116,7 @@ const ProductDetail = () => {
         {/* รายละเอียดผู้ขาย */}
         <div className="shadow-lg p-6 w-full sm:w-[400px] rounded-2xl mt-6">
           <h2 className="text-xl mb-4">รายละเอียดผู้ขาย</h2>
+          <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <img
               src={postProductDetail.owner?.photoURL}
@@ -125,6 +126,12 @@ const ProductDetail = () => {
             <p className="font-medium truncate w-32 sm:w-auto">
               {postProductDetail.owner?.displayName || "ไม่พบผู้ใช้"}
             </p>
+          </div>
+          <a
+              className="text-blue-600 font-medium hover:underline cursor-pointer"
+            >
+              ดูโปรไฟล์
+            </a>
           </div>
           {/* ปุ่มแชท */}
           <button className="mt-4 flex items-center justify-center bg-gray-200 text-black px-4 py-2 rounded-2xl w-full border border-gray-300 hover:bg-gray-300 cursor-pointer">
